@@ -87,4 +87,5 @@ jobs:
           path: |
             *.tar.xz
             *.7z
+          if-no-files-found: error
           retention-days: 7

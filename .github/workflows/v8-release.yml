@@ -69,11 +69,12 @@ jobs:
           path: |
             *.tar.xz
             *.7z
+          if-no-files-found: error
           retention-days: 7
 
   release:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ needs.build.result == 'success' }}
     needs: build
     steps:
       - name: Download Archives
