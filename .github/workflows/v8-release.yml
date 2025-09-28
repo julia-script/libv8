@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     name: Build V8
-    if: github.repository_owner == 'kuoruan'
     strategy:
       matrix:
         os: [ubuntu-latest, macos-13, macos-latest, windows-latest]
@@ -74,7 +73,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: ${{ needs.build.result == 'success' }}
     needs: build
     steps:
       - name: Download Archives
@@ -83,9 +82,11 @@ jobs:
           path: artifact
 
       - name: Display Downloads
+        if: ${{ hashFiles('artifact/**/*.tar.xz') != '' || hashFiles('artifact/**/*.7z') != '' }}
         run: ls -lhR artifact
 
       - name: Upload Archive
+        if: ${{ hashFiles('artifact/**/*.tar.xz') != '' || hashFiles('artifact/**/*.7z') != '' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}

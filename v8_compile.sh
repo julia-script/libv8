@@ -12,8 +12,17 @@ fi
 
 depot_tools_dir="${dir}/depot_tools"
 
-if [ ! -d "$depot_tools_dir" ]; then
-  echo "Error: depot_tools directory not found at ${depot_tools_dir}"
+# Ensure depot_tools is available (initialize submodule if missing or empty)
+if [ ! -d "$depot_tools_dir" ] || [ -z "$(ls -A "$depot_tools_dir" 2>/dev/null)" ]; then
+  echo "depot_tools not found or empty at ${depot_tools_dir}, initializing submodule..."
+  (
+    set -x
+    git -C "$dir" submodule update --init --recursive depot_tools
+  )
+fi
+
+if [ ! -d "$depot_tools_dir" ] || [ -z "$(ls -A "$depot_tools_dir" 2>/dev/null)" ]; then
+  echo "Error: depot_tools not available after initialization at ${depot_tools_dir}"
   exit 1
 fi
 

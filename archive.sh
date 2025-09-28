@@ -54,6 +54,17 @@ cp -r "${dir}/v8/include" \
   "${dir}/gn-args_${os}.txt" \
   "$output_dir"
 
+# On macOS, ship simple link flags hint for native frameworks
+if [ "$os" = "macOS" ]; then
+  cat >"$output_dir/README-macOS-linking.txt" <<'EOT'
+To link against libv8_monolith.a on macOS, add:
+
+  -framework CoreFoundation -framework Security
+
+And ensure your library search path includes the extracted obj directory.
+EOT
+fi
+
 tar -Jcf "${dir}/${archive}" -C "$output_dir" .
 
 ls -lh "${dir}/${archive}"
